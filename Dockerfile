@@ -36,7 +36,7 @@ RUN rm -rf node_modules tmp/cache app/assets/images app/assets/stylesheets vendo
 
 ############### Build step done ###############
 
-FROM ruby:2.6.6-alpine
+FROM ruby:2.6.6-alpine as app
 ARG RAILS_ROOT=/app
 ARG PACKAGES="tzdata postgresql-client nodejs bash libxml2 libxslt"
 ENV RAILS_ENV=production
@@ -50,5 +50,8 @@ RUN apk update \
 COPY --from=build-env $RAILS_ROOT $RAILS_ROOT
 
 EXPOSE 3000
-
 CMD ["bash", "startup.sh"]
+
+FROM scratch as static
+ARG RAILS_ROOT=/app
+COPY --from=build-env ${RAILS_ROOT}/public .
