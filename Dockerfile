@@ -37,8 +37,9 @@ RUN rm -rf node_modules tmp/cache app/assets/images app/assets/stylesheets vendo
 ############### Build step done ###############
 
 FROM ruby:2.6.6-alpine as app
+
 ARG RAILS_ROOT=/app
-ARG PACKAGES="tzdata postgresql-client nodejs bash libxml2 libxslt"
+ARG PACKAGES="tzdata postgresql-client nodejs bash libxml2 libxslt openssh"
 ENV RAILS_ENV=production
 ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
 WORKDIR $RAILS_ROOT
@@ -47,9 +48,15 @@ RUN apk update \
     && apk upgrade \
     && apk add --update --no-cache $PACKAGES \
     && gem install bundler -v2.2.10
+RUN echo "root:Docker!" | chpasswd 
 COPY --from=build-env $RAILS_ROOT $RAILS_ROOT
 
-EXPOSE 3000
+# Copy the sshd_config file to the /etc/ssh/ directory
+COPY sshd_config /etc/ssh/
+# Generate SSH host keys
+RUN ssh-keygen -A
+
+EXPOSE 3000 2222
 CMD ["bash", "startup.sh"]
 
 FROM scratch as static

@@ -4,3 +4,4 @@
 Dockerfile
 docker-bake.hcl
 .dockerignore
+.git

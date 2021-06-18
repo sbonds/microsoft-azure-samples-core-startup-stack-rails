@@ -1,4 +1,4 @@
-
+#!/bin/sh
 # Run Migrations
 
 if [ -n "$RAILS_ENV" ]
@@ -17,6 +17,9 @@ if [ -n "$SKIP_MIGRATIONS" ]
   else
 	bundle exec rake db:migrate
 fi
+
+echo "Starting SSH Server"
+/usr/sbin/sshd
 
 echo "## Migrations complete. Starting app."
 # Start App
