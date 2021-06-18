@@ -29,6 +29,9 @@ Rails.application.configure do
   config.assets.compile = false
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
+  if ENV["CDN_HOST"].present?
+    config.asset_host = ENV["CDN_HOST"]
+  end
   # config.action_controller.asset_host = 'http://assets.example.com'
 
   # Specifies the header that your server uses for sending files.
