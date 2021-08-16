@@ -1,14 +1,15 @@
 param domain string = ''
 param deployedTag string = 'latest'
-param name string
-param dbName string
-param dbPassword string
+param name string = 'startupstack'
+param dbName string = 'startupstack'
+@secure()
+param dbPassword string = ''
 param location string = resourceGroup().location
 
 var addressPrefix = '10.0.0.0/16'
 var vnetName = '${name}-vnet-${uniqueString(resourceGroup().name)}'
 
-resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
+resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = {
   name: vnetName
   location: location
   properties: {
@@ -22,7 +23,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   }
 }
 
-resource webAppSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
+resource webAppSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
   parent: vnet
   name: 'WebApp'
   properties: {
@@ -38,7 +39,7 @@ resource webAppSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
   }
 }
 
-resource dbSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
+resource dbSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
   parent: vnet
   name: 'db'
   properties: {
@@ -59,7 +60,6 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2020-11-01-pr
   location: location
   name: containerRegistryName
   properties: {
-    adminUserEnabled: true
     anonymousPullEnabled: false
     dataEndpointEnabled: false
     encryption: {
@@ -268,7 +268,9 @@ var dockerImageName = '${containerRegistryName}.azurecr.io/${name}:${deployedTag
 resource webApp 'Microsoft.Web/sites@2020-06-01' = {
   location: location
   name: webAppName
-  identity: {}
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     serverFarmId: appServicePlan.id
 
@@ -318,7 +320,7 @@ resource webApp 'Microsoft.Web/sites@2020-06-01' = {
   ]
 }
 
-resource webAppNetworkConfig 'Microsoft.Web/sites/networkConfig@2021-01-15' = {
+resource webAppNetworkConfig 'Microsoft.Web/sites/networkConfig@2020-12-01' = {
   parent: webApp
   name: 'virtualNetwork'
   properties: {
