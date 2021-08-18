@@ -20,38 +20,69 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = {
     }
     enableVmProtection: false
     enableDdosProtection: false
+    subnets: [
+      {
+        name: 'WebApp'
+        properties: {
+          addressPrefix: '10.0.1.0/24'
+          delegations: [
+            {
+              name: 'delegation'
+              properties: {
+                serviceName: 'Microsoft.Web/serverFarms'
+              }
+            }
+          ]
+        }
+      }
+      {
+        name: 'db'
+        properties: {
+          addressPrefix: '10.0.2.0/27'
+          delegations: [
+            {
+              name: 'delegation'
+              properties: {
+                serviceName: 'Microsoft.DBforPostgreSQL/flexibleServers'
+              }
+            }
+          ]
+        }
+      }
+    ]
   }
 }
 
-resource webAppSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
+resource webAppSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
   parent: vnet
   name: 'WebApp'
-  properties: {
-    addressPrefix: '10.0.1.0/24'
-    delegations: [
-      {
-        name: 'delegation'
-        properties: {
-          serviceName: 'Microsoft.Web/serverFarms'
-        }
-      }
-    ]
-  }
 }
-
-resource dbSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
+resource dbSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' existing = {
   parent: vnet
   name: 'db'
+}
+
+resource utilsSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
+  parent: vnet
+  name: 'utils'
+}
+
+var dbPrivateDnsZoneName = 'private.postgres.database.azure.com'
+resource dbPrivateDnsZone 'Microsoft.Network/privateDnsZones@2018-09-01' = {
+  name: dbPrivateDnsZoneName
+  location: 'global'
+  properties: {}
+}
+
+resource virtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
+  parent: dbPrivateDnsZone
+  name: '${dbPrivateDnsZone.name}-link'
+  location: 'global'
   properties: {
-    addressPrefix: '10.0.2.0/27'
-    delegations: [
-      {
-        name: 'delegation'
-        properties: {
-          serviceName: 'Microsoft.DBforPostgreSQL/flexibleServers'
-        }
-      }
-    ]
+    registrationEnabled: false
+    virtualNetwork: {
+      id: vnet.id
+    }
   }
 }
 
@@ -201,6 +232,9 @@ resource db 'Microsoft.DBForPostgreSql/flexibleServers@2020-02-14-preview' = {
       backupRetentionDays: 7
       storageMB: 32768
     }
+    privateDnsZoneArguments: {
+      privateDnsZoneArmResourceId: dbPrivateDnsZone.id
+    }
     version: '12'
   }
   sku: {
@@ -209,6 +243,8 @@ resource db 'Microsoft.DBForPostgreSql/flexibleServers@2020-02-14-preview' = {
   }
   dependsOn: [
     dbSubnet
+    dbPrivateDnsZone
+    virtualNetworkLink
   ]
 }
 
@@ -227,15 +263,6 @@ resource app_db 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2020-11-05-
   properties: {
     charset: 'UTF8'
     collation: 'en_US.utf8'
-  }
-}
-
-resource allow_all_azure_to_db 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2020-02-14-preview' = {
-  parent: db
-  name: 'AllowAllAzureServicesAndResourcesWithinAzureIps_2021-6-22_12-54-15'
-  properties: {
-    endIpAddress: '0.0.0.0'
-    startIpAddress: '0.0.0.0'
   }
 }
 
@@ -273,10 +300,10 @@ resource webApp 'Microsoft.Web/sites@2020-06-01' = {
   }
   properties: {
     serverFarmId: appServicePlan.id
-
     siteConfig: {
       alwaysOn: true
       linuxFxVersion: 'DOCKER|${dockerImageName}'
+      acrUseManagedIdentityCreds: true
       appSettings: [
         {
           name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
@@ -285,14 +312,6 @@ resource webApp 'Microsoft.Web/sites@2020-06-01' = {
         {
           name: 'DOCKER_REGISTRY_SERVER_URL'
           value: '${containerRegistryName}.azurecr.io'
-        }
-        {
-          name: 'DOCKER_REGISTRY_USERNAME'
-          value: containerRegistryName
-        }
-        {
-          name: 'DOCKER_REGISTRY_PASSWORD'
-          value: listCredentials(containerRegistryName, '2020-11-01-preview').passwords[0].value
         }
         {
           name: 'DATABASE_URL'
@@ -310,6 +329,10 @@ resource webApp 'Microsoft.Web/sites@2020-06-01' = {
           name: 'AZURE_STORAGE_CONTAINER'
           value: 'files'
         }
+        {
+          name: 'WEBSITE_DNS_SERVER'
+          value: '168.63.129.16'
+        }
       ]
     }
   }
@@ -317,6 +340,23 @@ resource webApp 'Microsoft.Web/sites@2020-06-01' = {
     appServicePlan
     containerRegistry
     webAppSubnet
+  ]
+}
+
+resource acrPullRoleDefinition 'Microsoft.Authorization/roleDefinitions@2015-07-01' existing = {
+  name: '7f951dda-4ed3-4680-a7ca-43fe172d538d' // AcrPull
+}
+
+resource webAppAcrRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(name)
+  properties: {
+    principalId: webApp.identity.principalId
+    roleDefinitionId: acrPullRoleDefinition.id
+    principalType: 'ServicePrincipal'
+  }
+  scope: containerRegistry
+  dependsOn: [
+    webApp
   ]
 }
 
