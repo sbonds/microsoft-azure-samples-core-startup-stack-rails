@@ -20,6 +20,7 @@ jobs:
     outputs:
       name: ${{ steps.setName.outputs.name }}
       deployTag: ${{ steps.setTag.outputs.deployTag }}
+      cr_name: ${{ steps.setCRName.outputs.cr_name}}
     steps:
     - uses: actions/checkout@v2
     - name: 'Set Name'
