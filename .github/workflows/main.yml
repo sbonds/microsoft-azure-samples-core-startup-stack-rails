@@ -63,7 +63,7 @@ jobs:
       with:
         push: true
         target: app
-        tags: user/${{ needs.config.outputs.name }}:${{ needs.config.outputs.deployTag }}
+        tags: ${{ needs.config.outputs.name }}.azurecr.io/${{ needs.config.outputs.name }}:${{ needs.config.outputs.deployTag }}
   
   deploy:
     runs-on: ubuntu-latest
