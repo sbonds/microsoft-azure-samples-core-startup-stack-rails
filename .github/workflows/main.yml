@@ -39,12 +39,6 @@ jobs:
         CR_NAME=${{ steps.setName.outputs.name }}
         echo "::set-output name=cr_name::${CR_NAME//'-'/''}"
 
-    - name: 'Set Deploy Service Principal id'
-      id: setSpId
-      run: |
-        SP_ID=$(az ad sp show --id=${{ fromJSON(secrets.AZURE_CREDENTIALS).clientId }} --query objectId -o tsv)
-        echo "::set-output name=deploy_sp_id::${SP_ID}"
-
     - name: 'Set Deploy Tag Name'
       id: setTag
       run: |
