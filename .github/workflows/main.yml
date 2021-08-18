@@ -70,8 +70,6 @@ jobs:
       with:
         push: true
         target: app
-        cache-from: ${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
-        cache-to: ${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
         tags: ${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:${{ needs.config.outputs.deployTag }}
   
   deploy:
