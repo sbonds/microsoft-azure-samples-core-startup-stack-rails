@@ -2,7 +2,6 @@ param domain string = ''
 param deployedTag string = 'latest'
 param name string = 'startupstack'
 param dbName string = 'startupstack'
-param deployServicePrincipalId string
 @secure()
 param dbPassword string = ''
 param location string = resourceGroup().location
@@ -116,19 +115,6 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2020-11-01-pr
   }
   sku: {
     name: 'Basic'
-  }
-}
-
-resource acrPushRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
-  name: '8311e382-0749-4cb8-b61a-304f252e45ec'
-}
-
-resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(name, 'acr-push')
-  scope: containerRegistry
-  properties: {
-    principalId: deployServicePrincipalId
-    roleDefinitionId: acrPushRoleDefinition.id
   }
 }
 
