@@ -18,15 +18,15 @@ jobs:
   config:
     runs-on: ubuntu-latest
     outputs:
-      params: ${{ steps.load.outputs.params }}
+      name: ${{ steps.setName.outputs.name }}
       deployTag: ${{ steps.setTag.outputs.deployTag }}
     steps:
     - uses: actions/checkout@v2
-    - name: 'Load Params'
-      id: load
+    - name: 'Set Name'
+      id: setName
       run: |
-        JSON=$(cat infrastructure/params-production.json)
-        echo "::set-output name=params::${JSON//'%'/'%25'}"
+        NAME=$(jq -r '.["parameters"]["name"]["value"]' infrastructure/params-production.json)
+        echo "::set-output name=name::${NAME//'%'/'%25'}"
     
     - name: 'Set Deploy Tag Name'
       id: setTag
@@ -53,7 +53,7 @@ jobs:
     - uses: azure/docker-login@v1
       name: 'Login to Azure Container Registry'
       with:
-        login-server: ${{ fromJSON(needs.config.outputs.params).parameters.name.value }}.azurecr.io
+        login-server: ${{ needs.config.outputs.name }}.azurecr.io
         username: ${{fromJSON(secrets.AZURE_CREDENTIALS).client_id}}
         password: ${{fromJSON(secrets.AZURE_CREDENTIALS).client_secret}}
     
@@ -63,7 +63,7 @@ jobs:
       with:
         push: true
         target: app
-        tags: user/${{ fromJSON(needs.config.outputs.params).parameters.name.value }}:${{ needs.config.outputs.deployTag }}
+        tags: user/${{ needs.config.outputs.name }}:${{ needs.config.outputs.deployTag }}
   
   deploy:
     runs-on: ubuntu-latest
