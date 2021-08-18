@@ -15,7 +15,7 @@ on:
 jobs:
   # This workflow contains a single job called "build"
 
-  loadParams:
+  config:
     runs-on: ubuntu-latest
     outputs:
       params: ${{ steps.load.outputs.params }}
