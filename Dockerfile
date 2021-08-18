@@ -14,7 +14,7 @@ RUN apk update \
     && apk upgrade \
     && apk add --update --no-cache $BUILD_PACKAGES $DEV_PACKAGES $RUBY_PACKAGES
 
-RUN gem install bundler -v 2.2.10
+RUN gem install bundler -v 2.2.19
 
 COPY Gemfile* package.json yarn.lock ./
 RUN bundle config build.nokogiri --use-system-libraries \
