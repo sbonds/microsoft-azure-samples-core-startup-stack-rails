@@ -86,7 +86,7 @@ resource virtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLin
   }
 }
 
-var containerRegistryName = '${replace(name, '-', '')}'
+var containerRegistryName = '${replace(name, '-', '')}${uniqueString(resourceGroup().id)}'
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2020-11-01-preview' = {
   location: location
   name: containerRegistryName
