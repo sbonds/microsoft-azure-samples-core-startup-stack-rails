@@ -21,6 +21,7 @@ jobs:
       name: ${{ steps.setName.outputs.name }}
       deployTag: ${{ steps.setTag.outputs.deployTag }}
       cr_name: ${{ steps.setCRName.outputs.cr_name}}
+      sp_id: ${{ steps.setSpId.outputs.sp_id}}
     steps:
     - uses: actions/checkout@v2
     - name: 'Set Name'
@@ -32,7 +33,13 @@ jobs:
       id: setCRName
       run: |
         CR_NAME=${{ steps.setName.outputs.name }}
-        echo "::set-output name=cr_name::${CR_NAME//'-'/''}" 
+        echo "::set-output name=cr_name::${CR_NAME//'-'/''}"
+
+    - name: 'Set Deploy Service Principal id'
+      id: setSpId
+      run: |
+        SP_ID=$(az ad sp show --id=${{ fromJSON(secrets.AZURE_CREDENTIALS).clientId }} --query objectId -o tsv)
+        echo "::set-output name=deploy_sp_id::${SP_ID}"
 
     - name: 'Set Deploy Tag Name'
       id: setTag
@@ -87,7 +94,7 @@ jobs:
           subscription: ${{ secrets.AZURE_SUBSCRIPTION }}
           resourceGroupName: ${{ secrets.AZURE_RG }}
           template: infrastructure/startup-stack.bicep
-          parameters: "dbPassword=${{ secrets.DB_PASSWORD }}"
+          parameters: "dbPassword=${{ secrets.DB_PASSWORD }} deployServicePrincipalId=${{ needs.config.outputs.sp_id }}"
         
 
 
