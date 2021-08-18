@@ -54,8 +54,8 @@ jobs:
       name: 'Login to Azure Container Registry'
       with:
         login-server: ${{ needs.config.outputs.name }}.azurecr.io
-        username: ${{fromJSON(secrets.AZURE_CREDENTIALS).client_id}}
-        password: ${{fromJSON(secrets.AZURE_CREDENTIALS).client_secret}}
+        username: ${{fromJSON(secrets.AZURE_CREDENTIALS).clientId}}
+        password: ${{fromJSON(secrets.AZURE_CREDENTIALS).clientSecret}}
     
     - name: Build and Push App
       id: docker_build
