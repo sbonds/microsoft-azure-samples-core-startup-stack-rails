@@ -27,7 +27,12 @@ jobs:
       run: |
         NAME=$(jq -r '.["parameters"]["name"]["value"]' infrastructure/params-production.json)
         echo "::set-output name=name::${NAME//'%'/'%25'}"
-    
+    - name: 'Set Container Registry Name'
+      id: setCRName
+      run: |
+        CR_NAME=${{ steps.setName.outputs.name }}
+        echo "::set-output name=cr_name::${CR_NAME//'-'/''}" 
+
     - name: 'Set Deploy Tag Name'
       id: setTag
       run: |
@@ -53,7 +58,7 @@ jobs:
     - uses: azure/docker-login@v1
       name: 'Login to Azure Container Registry'
       with:
-        login-server: ${{ needs.config.outputs.name }}.azurecr.io
+        login-server: ${{ needs.config.outputs.cr_name }}.azurecr.io
         username: ${{fromJSON(secrets.AZURE_CREDENTIALS).clientId}}
         password: ${{fromJSON(secrets.AZURE_CREDENTIALS).clientSecret}}
     
@@ -63,7 +68,9 @@ jobs:
       with:
         push: true
         target: app
-        tags: ${{ needs.config.outputs.name }}.azurecr.io/${{ needs.config.outputs.name }}:${{ needs.config.outputs.deployTag }}
+        cache-from: ${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
+        cache-to: ${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
+        tags: ${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:${{ needs.config.outputs.deployTag }}
   
   deploy:
     runs-on: ubuntu-latest
