@@ -96,7 +96,7 @@ jobs:
           subscription: ${{ secrets.AZURE_SUBSCRIPTION }}
           resourceGroupName: ${{ secrets.AZURE_RG }}
           template: infrastructure/startup-stack.bicep
-          parameters: "dbPassword=${{ secrets.DB_PASSWORD }} deployServicePrincipalId=${{ needs.config.outputs.sp_id }}"
+          parameters: "dbPassword=${{ secrets.DB_PASSWORD }}"
         
 
 
