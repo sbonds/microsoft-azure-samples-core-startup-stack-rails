@@ -12,32 +12,74 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
+
+  loadParams:
+    runs-on: ubuntu-latest
+    outputs:
+      params: ${{ steps.load.outputs.params }}
+    steps:
+    - name: 'Load Params'
+      id: load
+      run: |
+        JSON=$(cat infrastructure/params-production.json)
+        echo "::set-output name=params::${JSON//'%'/'%25'}"
+    
+
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+    
+    - name: 'Load Params'
+      id: load
+      run: |
+        JSON=$(cat infrastructure/params-production.json)
+        echo "::set-output name=params::${JSON//'%'/'%25'}"
+    
+    - name: 'Set Deploy Tag Name'
+      id: setTag
+      run: |
+        DEPLOY_TAG=$(git describe --tags --always HEAD)
+        echo "::set-output name=deployTag::${DEPLOY_TAG}"
     
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
     - uses: azure/docker-login@v1
-      name: 'Login to Azure'
+      name: 'Login to Azure Container Registry'
       with:
-        login-server: railskubernetes.azurecr.io
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
-
-    - name: 'Build and push image'
-      run: |
-        docker pull railskubernetes.azurecr.io/rails-sample || true
-        docker build . -t railskubernetes.azurecr.io/rails-sample:${{ github.sha }} --cache-from=railskubernetes.azurecr.io/rails-sample
-        docker tag railskubernetes.azurecr.io/rails-sample:${{ github.sha }} railskubernetes.azurecr.io/rails-sample:latest
-        docker push railskubernetes.azurecr.io/rails-sample:${{ github.sha }}
+        login-server: ${{ fromJSON(steps.load.outputs.params).parameters.name.value }}.azurecr.io
+        username: ${{fromJSON(secrets.AZURE_CREDENTIALS).client_id}}
+        password: ${{fromJSON(secrets.AZURE_CREDENTIALS).client_secret}}
+    
+    - name: Build and Push App
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        target: app
+        tags: user/${{ fromJSON(steps.load.outputs.params).parameters.name.value }}:${{ steps.setTag.outputs.deployTag }}
   
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+    - build
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: 'Deploy Infrastructure'
+        uses: azure/arm-deploy@v1
+        with:
+          subscription: ${{ secrets.AZURE_SUBSCRIPTION }}
+          resourceGroupName: ${{ secrets.AZURE_RG }}
+          template: infrastructure/startup-stack.bicep
+          parameters: "dbPassword=${{ secrets.DB_PASSWORD }}"
+        
 
 
