@@ -26,7 +26,7 @@ jobs:
       id: load
       run: |
         JSON=$(cat infrastructure/params-production.json)
-        echo "::set-output name=params::'${JSON//'%'/'%25'}'"
+        echo "::set-output name=params::${JSON//'%'/'%25'}"
     
     - name: 'Set Deploy Tag Name'
       id: setTag
