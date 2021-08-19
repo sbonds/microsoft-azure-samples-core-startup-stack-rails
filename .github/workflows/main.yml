@@ -67,8 +67,8 @@ jobs:
         push: true
         target: app
         tags: ${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:${{ needs.config.outputs.deployTag }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-from: type=registry,ref=${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
+        cache-to: type=registry,ref=${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache,mode=max
   
   deploy:
     runs-on: ubuntu-latest
