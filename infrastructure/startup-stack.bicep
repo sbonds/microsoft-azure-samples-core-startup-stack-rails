@@ -326,6 +326,10 @@ resource webApp 'Microsoft.Web/sites@2020-06-01' = {
           value: listKeys(storageAccountName, '2021-04-01').keys[0].value
         }
         {
+          name: 'SECRET_KEY_BASE'
+          value: 'DEFAULT_SECRET_KEY_BASE'
+        }
+        {
           name: 'AZURE_STORAGE_CONTAINER'
           value: 'files'
         }
