@@ -79,8 +79,6 @@ jobs:
         push: true
         target: app
         tags: ${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:${{ needs.config.outputs.deployTag }}
-        cache-from: type=gha, mode=max, scope=${{ github.workflow }}
-        cache-to: type=gha, mode=max, scope=${{ github.workflow }}
   
   deploy:
     runs-on: ubuntu-latest
