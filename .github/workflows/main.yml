@@ -98,7 +98,7 @@ jobs:
           subscription: ${{ secrets.AZURE_SUBSCRIPTION }}
           resourceGroupName: ${{ secrets.AZURE_RG }}
           template: infrastructure/startup-stack.bicep
-          parameters: "infrastructure/params-production.json dbPassword=${{ secrets.DB_PASSWORD }}"
+          parameters: "infrastructure/params-production.json dbPassword=${{ secrets.DB_PASSWORD }} deployedTag=${{ needs.config.outputs.deployTag }}"
         
 
 
