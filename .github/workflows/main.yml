@@ -84,6 +84,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
     - build
+    - config
     
     steps:
       - name: 'Login via Azure CLI'
@@ -95,7 +96,7 @@ jobs:
       - name: 'Deploy Infrastructure'
         uses: azure/arm-deploy@v1
         with:
-          subscription: ${{ secrets.AZURE_SUBSCRIPTION }}
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           resourceGroupName: ${{ secrets.AZURE_RG }}
           template: infrastructure/startup-stack.bicep
           parameters: "infrastructure/params-production.json dbPassword=${{ secrets.DB_PASSWORD }} deployedTag=${{ needs.config.outputs.deployTag }}"
