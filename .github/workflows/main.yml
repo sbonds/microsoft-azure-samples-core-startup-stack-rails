@@ -36,7 +36,7 @@ jobs:
     - name: 'Set Container Registry Name'
       id: setCRName
       run: |
-        CR_NAME=${{ steps.setName.outputs.name }}
+        CR_NAME=$(az acr list -g ${{ secrets.AZURE_RG }} --query [0].name -o tsv)
         echo "::set-output name=cr_name::${CR_NAME//'-'/''}"
 
     - name: 'Set Deploy Tag Name'
