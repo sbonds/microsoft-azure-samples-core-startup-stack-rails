@@ -98,7 +98,7 @@ jobs:
         azcopy login --service-principal --application-id ${{ fromJSON(secrets.AZURE_CREDENTIALS).clientId}}
         ASSETS_URL="$(az storage account list -g ${{ secrets.AZURE_RG }} --query [0].primaryEndpoints.blob -o tsv)assets"
         echo $ASSETS_URL
-        azcopy copy --recursive static $ASSETS_URL
+        azcopy copy --recursive "static/*" $ASSETS_URL
         azcopy logout
   
       
