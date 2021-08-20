@@ -76,7 +76,21 @@ jobs:
         tags: ${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:${{ needs.config.outputs.deployTag }}
         cache-from: type=registry,ref=${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
         cache-to: type=registry,ref=${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache,mode=max
-  
+    
+    - name: Export assets
+      id: export_assets
+      uses: docker/build-push-action@v2.6.1
+      with:
+        push: false
+        target: assets
+        cache-from: type=registry,ref=${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
+        output: local,dest=static
+    
+    - name: Store Assets
+      run: |
+        azcopy sync static ${{ needs.config.outputs.static_container_url }}
+      
+
   deploy:
     runs-on: ubuntu-latest
     needs:
