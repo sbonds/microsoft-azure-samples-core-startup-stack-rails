@@ -22,7 +22,6 @@ jobs:
       deployTag: ${{ steps.setTag.outputs.deployTag }}
       cr_name: ${{ steps.setCRName.outputs.cr_name}}
       sp_id: ${{ steps.setSpId.outputs.sp_id}}
-      static_container_url: ${ steps.setAssetsUrl.outputs.assetsUrl}
     steps:
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
@@ -46,12 +45,6 @@ jobs:
         DEPLOY_TAG=$(git describe --tags --always HEAD)
         echo "::set-output name=deployTag::${DEPLOY_TAG}"
 
-    - name: Set assets container URL
-      id: setAssetsUrl
-      run: |
-        ASSETS_URL=$(az storage account list -g ${{ secrets.AZURE_RG }} --query [0].name -o tsv)
-        echo "::set-output name=assetsUrl::${ASSETS_URL}"
-    
 
   build:
     # The type of runner that the job will run on
@@ -95,7 +88,8 @@ jobs:
     
     - name: Store Assets
       run: |
-        azcopy sync static ${{ needs.config.outputs.static_container_url }}
+        ASSETS_URL=$(az storage account list -g ${{ secrets.AZURE_RG }} --query [0].name -o tsv)
+        azcopy sync static $ASSETS_URL
       
 
   deploy:
