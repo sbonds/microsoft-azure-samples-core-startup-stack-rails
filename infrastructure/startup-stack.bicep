@@ -342,6 +342,10 @@ resource webApp 'Microsoft.Web/sites@2020-06-01' = {
           name: 'CDN_HOST'
           value: asset_endpoint.properties.hostName
         }
+        {
+          name: 'RAILS_LOG_TO_STDOUT'
+          value: '1'
+        }
       ]
     }
   }
