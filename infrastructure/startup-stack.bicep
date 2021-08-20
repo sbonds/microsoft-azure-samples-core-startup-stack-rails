@@ -491,6 +491,14 @@ resource asset_endpoint 'Microsoft.Cdn/profiles/endpoints@2020-09-01' = {
   ]
 }
 
+resource cdnHostAppSetting 'Microsoft.Web/sites/config@2021-01-15' = {
+  parent: webApp
+  name: 'appsettings'
+  properties: {
+    CDN_HOST: asset_hostname
+  }
+}
+
 resource webAppCustomDomain 'Microsoft.Cdn/profiles/endpoints/customdomains@2020-09-01' = if (!empty(domain)) {
   parent: appCdnEndpoint
   name: '${name}-custom-domain'
