@@ -22,6 +22,7 @@ jobs:
       deployTag: ${{ steps.setTag.outputs.deployTag }}
       cr_name: ${{ steps.setCRName.outputs.cr_name}}
       sp_id: ${{ steps.setSpId.outputs.sp_id}}
+      static_container_url: ${ steps.setAssetsUrl.outputs.assetsUrl}
     steps:
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
@@ -44,6 +45,12 @@ jobs:
       run: |
         DEPLOY_TAG=$(git describe --tags --always HEAD)
         echo "::set-output name=deployTag::${DEPLOY_TAG}"
+
+    - name: Set assets container URL
+      id: setAssetsUrl
+      run: |
+        ASSETS_URL=$(az storage account list -g ${{ secrets.AZURE_RG }} --query [0].name -o tsv)
+        echo "::set-output name=assetsUrl::${ASSETS_URL}"
     
 
   build:
@@ -82,7 +89,7 @@ jobs:
       uses: docker/build-push-action@v2.6.1
       with:
         push: false
-        target: assets
+        target: static
         cache-from: type=registry,ref=${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
         output: local,dest=static
     
