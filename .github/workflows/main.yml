@@ -86,6 +86,11 @@ jobs:
         cache-from: type=registry,ref=${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
         output: local,dest=static
     
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+  
     - name: Store Assets
       run: |
         ASSETS_URL=$(az storage account list -g ${{ secrets.AZURE_RG }} --query [0].name -o tsv)
