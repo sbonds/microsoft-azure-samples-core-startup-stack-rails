@@ -291,6 +291,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
 }
 
 var webAppName = '${name}-webapp'
+var asset_hostname = replace(replace(storageAccount.properties.primaryEndpoints.blob, 'https://', ''), '/', '')
 var dockerImageName = '${containerRegistryName}.azurecr.io/${name}:${deployedTag}'
 resource webApp 'Microsoft.Web/sites@2020-06-01' = {
   location: location
@@ -336,6 +337,10 @@ resource webApp 'Microsoft.Web/sites@2020-06-01' = {
         {
           name: 'WEBSITE_DNS_SERVER'
           value: '168.63.129.16'
+        }
+        {
+          name: 'CDN_HOST'
+          value: asset_hostname
         }
       ]
     }
@@ -451,7 +456,6 @@ resource appCdnEndpoint 'Microsoft.Cdn/profiles/endpoints@2020-09-01' = {
   ]
 }
 
-var asset_hostname = replace(replace(storageAccount.properties.primaryEndpoints.blob, 'https://', ''), '/', '')
 resource asset_endpoint 'Microsoft.Cdn/profiles/endpoints@2020-09-01' = {
   parent: cdnProfile
   location: 'Global'
@@ -489,14 +493,6 @@ resource asset_endpoint 'Microsoft.Cdn/profiles/endpoints@2020-09-01' = {
   dependsOn: [
     storageAccount
   ]
-}
-
-resource cdnHostAppSetting 'Microsoft.Web/sites/config@2021-01-15' = {
-  parent: webApp
-  name: 'appsettings'
-  properties: {
-    CDN_HOST: asset_hostname
-  }
 }
 
 resource webAppCustomDomain 'Microsoft.Cdn/profiles/endpoints/customdomains@2020-09-01' = if (!empty(domain)) {
