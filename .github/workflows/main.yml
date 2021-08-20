@@ -84,7 +84,7 @@ jobs:
         push: false
         target: static
         cache-from: type=registry,ref=${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
-        output: local,dest=static
+        outputs: local,dest=static
     
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
