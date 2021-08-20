@@ -340,7 +340,7 @@ resource webApp 'Microsoft.Web/sites@2020-06-01' = {
         }
         {
           name: 'CDN_HOST'
-          value: asset_hostname
+          value: asset_endpoint.properties.hostName
         }
       ]
     }
