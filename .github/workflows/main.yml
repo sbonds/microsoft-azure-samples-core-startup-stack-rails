@@ -95,7 +95,7 @@ jobs:
       run: |
         STORAGE_ACCOUNT_NAME=$(az storage account list -g ${{ secrets.AZURE_RG }} --query [0].name -o tsv)
         EXPIRY=`date -u -d "30 minutes" '+%Y-%m-%dT%H:%MZ'`
-        SAS_TOKEN="$(az storage container generate-sas -n assets --as-user --auth-mode login --expiry $EXPIRY --account-name STORAGE_ACCOUNT_NAME)"
+        SAS_TOKEN="$(az storage container generate-sas -n assets --as-user --auth-mode login --expiry $EXPIRY --account-name $STORAGE_ACCOUNT_NAME)"
         ASSETS_URL="$(az storage account list -g ${{ secrets.AZURE_RG }} --query [0].primaryEndpoints.blob -o tsv)/assets?${SAS_TOKEN}"
         azcopy sync static $ASSETS_URL
       
