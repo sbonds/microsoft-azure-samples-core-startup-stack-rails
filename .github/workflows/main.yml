@@ -93,7 +93,7 @@ jobs:
   
     - name: Store Assets
       run: |
-        ASSETS_URL=$(az storage account list -g ${{ secrets.AZURE_RG }} --query [0].primaryEndpoints.blob -o tsv)/assets
+        ASSETS_URL="$(az storage account list -g ${{ secrets.AZURE_RG }} --query [0].primaryEndpoints.blob -o tsv)/assets"
         azcopy sync static $ASSETS_URL
       
 
