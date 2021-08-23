@@ -19,7 +19,7 @@ if [ -n "$SKIP_MIGRATIONS" ]
 fi
 
 echo "Starting SSH Server"
-/usr/sbin/sshd
+/usr/sbin/sshd -o "SetEnv=RAILS_ENV=\"$RAILS_ENV\" DATABASE_URL=\"$DATABASE_URL\" SECRET_KEY_BASE=stubbed"
 
 echo "## Migrations complete. Starting app."
 # Start App
