@@ -47,7 +47,7 @@ WORKDIR $RAILS_ROOT
 RUN apk update \
     && apk upgrade \
     && apk add --update --no-cache $PACKAGES \
-    && gem install bundler -v2.2.10
+    && gem install bundler -v2.2.19
 RUN echo "root:Docker!" | chpasswd 
 COPY --from=build-env $RAILS_ROOT $RAILS_ROOT
 
