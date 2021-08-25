@@ -361,7 +361,7 @@ resource acrPullRoleDefinition 'Microsoft.Authorization/roleDefinitions@2015-07-
 }
 
 resource webAppAcrRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(name)
+  name: guid('${uniqueName}-webAppAcr')
   properties: {
     principalId: webApp.identity.principalId
     roleDefinitionId: acrPullRoleDefinition.id
