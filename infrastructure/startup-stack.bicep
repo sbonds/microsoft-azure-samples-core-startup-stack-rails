@@ -8,7 +8,7 @@ param location string = resourceGroup().location
 
 var addressPrefix = '10.0.0.0/16'
 var vnetName = '${name}-vnet-${uniqueString(resourceGroup().name)}'
-
+var uniqueName = '${name}${take(uniqueString(resourceGroup().id), 6)}'
 resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = {
   name: vnetName
   location: location
@@ -290,7 +290,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
   }
 }
 
-var webAppName = '${name}-webapp'
+var webAppName = '${uniqueName}-webapp'
 var asset_hostname = replace(replace(storageAccount.properties.primaryEndpoints.blob, 'https://', ''), '/', '')
 var dockerImageName = '${containerRegistryName}.azurecr.io/${name}:${deployedTag}'
 resource webApp 'Microsoft.Web/sites@2020-06-01' = {
@@ -394,7 +394,7 @@ resource cdnProfile 'Microsoft.Cdn/profiles@2020-09-01' = {
 resource appCdnEndpoint 'Microsoft.Cdn/profiles/endpoints@2020-09-01' = {
   parent: cdnProfile
   location: 'Global'
-  name: '${name}-app'
+  name: '${uniqueName}-app'
   properties: {
     deliveryPolicy: {
       rules: [
@@ -463,7 +463,7 @@ resource appCdnEndpoint 'Microsoft.Cdn/profiles/endpoints@2020-09-01' = {
 resource asset_endpoint 'Microsoft.Cdn/profiles/endpoints@2020-09-01' = {
   parent: cdnProfile
   location: 'Global'
-  name: '${name}-assets'
+  name: '${uniqueName}-assets'
   properties: {
     isCompressionEnabled: true
     contentTypesToCompress: [
