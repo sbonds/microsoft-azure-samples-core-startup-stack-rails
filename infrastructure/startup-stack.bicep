@@ -220,7 +220,7 @@ resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containe
 
 resource db 'Microsoft.DBForPostgreSql/flexibleServers@2020-02-14-preview' = {
   location: location
-  name: '${name}-db'
+  name: '${name}-db-${uniqueString(resourceGroup().id)}'
   properties: {
     delegatedSubnetArguments: {
       subnetArmResourceId: dbSubnet.id
