@@ -132,7 +132,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/Workspaces@2020-10
   }
 }
 
-var storageAccountName = '${replace(name, '-', '')}storage'
+var storageAccountName = '${replace(name, '-', '')}storage${uniqueString(resourceGroup().id)}'
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   kind: 'StorageV2'
   location: location
