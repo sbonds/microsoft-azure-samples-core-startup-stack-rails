@@ -21,7 +21,7 @@ jobs:
       name: ${{ steps.setName.outputs.name }}
       deployTag: ${{ steps.setTag.outputs.deployTag }}
       crName: ${{ steps.setCRName.outputs.crName}}
-      sp_id: ${{ steps.setSpId.outputs.spId}}
+      spId: ${{ steps.setSpId.outputs.spId}}
     steps:
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
