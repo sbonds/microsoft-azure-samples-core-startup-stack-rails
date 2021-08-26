@@ -5,6 +5,7 @@ param dbName string = 'startupstack'
 @secure()
 param dbPassword string = ''
 param location string = resourceGroup().location
+param deploymentSpId string
 
 var addressPrefix = '10.0.0.0/16'
 var vnetName = '${name}-vnet-${uniqueString(resourceGroup().name)}'
@@ -216,6 +217,19 @@ resource filesContainer 'Microsoft.Storage/storageAccounts/blobServices/containe
   dependsOn: [
     storageAccount
   ]
+}
+
+resource storageContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  name: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe' // Storage Blob Data Contributor
+}
+
+resource storageContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  scope: storageAccount
+  name: guid('${uniqueName}-storageContributor')
+  properties: {
+    principalId: deploymentSpId
+    roleDefinitionId: storageContributorRoleDefinition.id
+  }
 }
 
 resource db 'Microsoft.DBForPostgreSql/flexibleServers@2020-02-14-preview' = {

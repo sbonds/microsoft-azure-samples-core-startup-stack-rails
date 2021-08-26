@@ -20,8 +20,8 @@ jobs:
     outputs:
       name: ${{ steps.setName.outputs.name }}
       deployTag: ${{ steps.setTag.outputs.deployTag }}
-      cr_name: ${{ steps.setCRName.outputs.cr_name}}
-      sp_id: ${{ steps.setSpId.outputs.sp_id}}
+      crName: ${{ steps.setCRName.outputs.crName}}
+      sp_id: ${{ steps.setSpId.outputs.spId}}
     steps:
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
@@ -37,13 +37,19 @@ jobs:
       id: setCRName
       run: |
         CR_NAME=$(az acr list -g ${{ secrets.AZURE_RG }} --query [0].name -o tsv)
-        echo "::set-output name=cr_name::${CR_NAME//'-'/''}"
+        echo "::set-output name=crName::${CR_NAME//'-'/''}"
 
     - name: 'Set Deploy Tag Name'
       id: setTag
       run: |
         DEPLOY_TAG=$(git describe --tags --always HEAD)
         echo "::set-output name=deployTag::${DEPLOY_TAG}"
+
+    - name: 'Set Service Principal ID'
+      id: setSpId
+      run: |
+        SP_ID=$(az ad sp show --id ${{ fromJSON(secrets.AZURE_CREDENTIALS).clientId }} --query objectId -o tsv)
+        echo "::set-output name=spId::${SP_ID}"
 
 
   build:
@@ -58,7 +64,7 @@ jobs:
     - uses: azure/docker-login@v1
       name: 'Login to Azure Container Registry'
       with:
-        login-server: ${{ needs.config.outputs.cr_name }}.azurecr.io
+        login-server: ${{ needs.config.outputs.crName }}.azurecr.io
         username: ${{fromJSON(secrets.AZURE_CREDENTIALS).clientId}}
         password: ${{fromJSON(secrets.AZURE_CREDENTIALS).clientSecret}}
 
@@ -73,9 +79,9 @@ jobs:
       with:
         push: true
         target: app
-        tags: ${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:${{ needs.config.outputs.deployTag }}
-        cache-from: type=registry,ref=${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
-        cache-to: type=registry,ref=${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache,mode=max
+        tags: ${{ needs.config.outputs.crName }}.azurecr.io/${{ needs.config.outputs.name }}:${{ needs.config.outputs.deployTag }}
+        cache-from: type=registry,ref=${{ needs.config.outputs.crName }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
+        cache-to: type=registry,ref=${{ needs.config.outputs.crName }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache,mode=max
     
     - name: Export assets
       id: export_assets
@@ -83,7 +89,7 @@ jobs:
       with:
         push: false
         target: static
-        cache-from: type=registry,ref=${{ needs.config.outputs.cr_name }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
+        cache-from: type=registry,ref=${{ needs.config.outputs.crName }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
         outputs: type=local,dest=static
     
     - name: 'Login via Azure CLI'
@@ -100,8 +106,6 @@ jobs:
         echo $ASSETS_URL
         azcopy copy --recursive "static/*" $ASSETS_URL
         azcopy logout
-  
-      
 
   deploy:
     runs-on: ubuntu-latest
@@ -115,14 +119,14 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - uses: actions/checkout@v2
-      
+
       - name: 'Deploy Infrastructure'
         uses: azure/arm-deploy@v1
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           resourceGroupName: ${{ secrets.AZURE_RG }}
           template: infrastructure/startup-stack.bicep
-          parameters: "infrastructure/params-production.json dbPassword=${{ secrets.DB_PASSWORD }} deployedTag=${{ needs.config.outputs.deployTag }}"
+          parameters: "infrastructure/params-production.json dbPassword=${{ secrets.DB_PASSWORD }} deployedTag=${{ needs.config.outputs.deployTag }} deploySpId=${{ needs.config.outputs.spId }}" 
         
 
 
