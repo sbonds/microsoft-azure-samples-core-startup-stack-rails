@@ -130,10 +130,9 @@ jobs:
           parameters: "infrastructure/params-production.json dbPassword=\"${{ secrets.DB_PASSWORD }}\" deployedTag=${{ needs.config.outputs.deployTag }} deploymentSpId=${{ needs.config.outputs.spId }}"
       
       - run: |
-          echo "Successfully deployed to resource group '$AZURE_RG' using the Startup Stack."
+          echo "Successfully deployed to resource group '${{ secrets.AZURE_RG }}' using the Startup Stack."
           echo "Webapp name: ${{ steps.deployInfra.outputs.webappName }}"
           echo "Connect to the app via ssh using this command:"
-          echo "az webapp ssh -n steps.deployInfra.outputs.webappName" -g $AZURE_RG"
+          echo "az webapp ssh -n steps.deployInfra.outputs.webappName -g ${{ secrets.AZURE_RG }}"
           echo "URL: ${{ steps.deployInfra.outputs.url }}"
-      
         
