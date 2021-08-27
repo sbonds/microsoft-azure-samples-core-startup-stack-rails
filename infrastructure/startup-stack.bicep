@@ -523,3 +523,6 @@ resource webAppCustomDomain 'Microsoft.Cdn/profiles/endpoints/customdomains@2020
     cdnProfile
   ]
 }
+
+output url string = 'https://${appCdnEndpoint.properties.hostName}'
+output webAppName string = webAppName

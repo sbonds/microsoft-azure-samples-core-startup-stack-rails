@@ -122,11 +122,18 @@ jobs:
 
       - name: 'Deploy Infrastructure'
         uses: azure/arm-deploy@v1
+        id: deployInfra
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           resourceGroupName: ${{ secrets.AZURE_RG }}
           template: infrastructure/startup-stack.bicep
-          parameters: "infrastructure/params-production.json dbPassword=\"${{ secrets.DB_PASSWORD }}\" deployedTag=${{ needs.config.outputs.deployTag }} deploymentSpId=${{ needs.config.outputs.spId }}" 
+          parameters: "infrastructure/params-production.json dbPassword=\"${{ secrets.DB_PASSWORD }}\" deployedTag=${{ needs.config.outputs.deployTag }} deploymentSpId=${{ needs.config.outputs.spId }}"
+      
+      - run: |
+          echo "Successfully deployed to resource group '$AZURE_RG' using the Startup Stack."
+          echo "Webapp name: ${{ steps.deployInfra.outputs.webappName }}"
+          echo "Connect to the app via ssh using this command:"
+          echo "az webapp ssh -n steps.deployInfra.outputs.webappName" -g $AZURE_RG"
+          echo "URL: ${{ steps.deployInfra.outputs.url }}"
+      
         
-
-
