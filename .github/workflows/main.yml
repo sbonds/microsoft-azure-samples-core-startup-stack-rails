@@ -129,10 +129,13 @@ jobs:
           template: infrastructure/startup-stack.bicep
           parameters: "infrastructure/params-production.json dbPassword=\"${{ secrets.DB_PASSWORD }}\" deployedTag=${{ needs.config.outputs.deployTag }} deploymentSpId=${{ needs.config.outputs.spId }}"
       
-      - run: |
-          echo "Successfully deployed to resource group '${{ secrets.AZURE_RG }}' using the Startup Stack."
-          echo "Webapp name: ${{ steps.deployInfra.outputs.webappName }}"
-          echo "Connect to the app via ssh using this command:"
-          echo "az webapp ssh -n steps.deployInfra.outputs.webappName -g ${{ secrets.AZURE_RG }}"
-          echo "URL: ${{ steps.deployInfra.outputs.url }}"
-        
+      - name: Success!
+        run: |
+          echo -e "
+          \e[1;32mSuccessfully deployed using the Startup Stack. \e[0m
+          \e[1mWebapp name:\e[0m ${{ steps.deployInfra.outputs.webappName }} 
+          \e[1mURL:\e[0m ${{ steps.deployInfra.outputs.url }}
+          \e[1;32mConnect to the app via ssh using this command:\e[0m
+          az webapp ssh -n ${{ steps.deployInfra.outputs.webappName }} -g <RESOURCE GROUP NAME>
+          "
+                
