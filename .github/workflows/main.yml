@@ -79,6 +79,7 @@ jobs:
       with:
         push: true
         target: app
+        build-args: commit=${{ needs.config.outputs.deployTag }}
         tags: ${{ needs.config.outputs.crName }}.azurecr.io/${{ needs.config.outputs.name }}:${{ needs.config.outputs.deployTag }}
         cache-from: type=registry,ref=${{ needs.config.outputs.crName }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache
         cache-to: type=registry,ref=${{ needs.config.outputs.crName }}.azurecr.io/${{ needs.config.outputs.name }}:buildcache,mode=max
