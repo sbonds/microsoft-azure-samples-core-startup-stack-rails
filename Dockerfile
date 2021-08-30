@@ -1,4 +1,4 @@
-FROM ruby:2.6.6-alpine AS build-env
+FROM ruby:2.7-alpine AS build-env
 
 ARG RAILS_ROOT=/app
 ARG BUILD_PACKAGES="build-base curl-dev git"
@@ -29,14 +29,13 @@ RUN bundle config build.nokogiri --use-system-libraries \
 
 RUN yarn install --production --check-files
 COPY . .
-RUN bundle exec bin/rails webpacker:compile
-RUN bundle exec bin/rails assets:precompile
-
-RUN rm -rf node_modules tmp/cache app/assets/images app/assets/stylesheets vendor/assets spec
+RUN bundle exec bin/rails webpacker:compile \
+    && bundle exec bin/rails assets:precompile \
+    && rm -rf node_modules tmp/cache app/assets/images app/assets/stylesheets vendor/assets spec
 
 ############### Build step done ###############
 
-FROM ruby:2.6.6-alpine as app
+FROM ruby:2.7-alpine as app
 
 ARG RAILS_ROOT=/app
 ARG PACKAGES="tzdata postgresql-client nodejs bash libxml2 libxslt openssh"
