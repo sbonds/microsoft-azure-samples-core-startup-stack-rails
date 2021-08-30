@@ -39,8 +39,7 @@ FROM ruby:2.7-alpine as app
 
 ARG RAILS_ROOT=/app
 ARG PACKAGES="tzdata postgresql-client nodejs bash libxml2 libxslt openssh"
-ENV RAILS_ENV=production
-ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
+ENV RAILS_ENV=production BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
 WORKDIR $RAILS_ROOT
 # install packages
 RUN apk update \
@@ -54,6 +53,9 @@ COPY --from=build-env $RAILS_ROOT $RAILS_ROOT
 COPY sshd_config /etc/ssh/
 # Generate SSH host keys
 RUN ssh-keygen -A
+
+ARG commit="Unset"
+ENV COMMIT=${commit}
 
 EXPOSE 3000 2222
 CMD ["bash", "startup.sh"]
