@@ -319,6 +319,7 @@ resource webApp 'Microsoft.Web/sites@2020-06-01' = {
       alwaysOn: true
       linuxFxVersion: 'DOCKER|${dockerImageName}'
       acrUseManagedIdentityCreds: true
+      vnetRouteAllEnabled: true
       appSettings: [
         {
           name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
