@@ -24,8 +24,8 @@ RUN bundle config build.nokogiri --use-system-libraries \
     && bundle install -j4 --retry 3 \
     # Remove unneeded files (cached *.gem, *.o, *.c)
     && rm -rf vendor/bundle/ruby/2.5.0/cache/*.gem \
-    && find vendor/bundle/ruby/2.6.0/gems/ -name "*.c" -delete \
-    && find vendor/bundle/ruby/2.6.0/gems/ -name "*.o" -delete
+    && find vendor/bundle/ruby/*/gems/ -name "*.c" -delete \
+    && find vendor/bundle/ruby/*/gems/ -name "*.o" -delete
 
 RUN yarn install --production --check-files
 COPY . .
