@@ -1,8 +1,10 @@
 # Startup Stack Sample App
+This repository demonstrates the Startup Stack – a set of infrastructure designed to get your app deployed in a robust, production-ready way with a minimum of fuss.
 
 ## Deploying the Startup Stack Sample App
 
 ### Fork this repository
+Fork this repository into your own account (GitHub has [more information about forking repos](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
 
 ### Create a resource group and service principal
 
