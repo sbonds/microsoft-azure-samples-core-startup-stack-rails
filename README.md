@@ -8,7 +8,7 @@ Fork this repository into your own account (GitHub has [more information about f
 
 ### Create a resource group and service principal
 
-Either using Azure Cloud Shell or the Azure CLI on your local machine, first create a resource group to use for this project.
+Either using [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/overview) or the [Azure CLI](https://docs.microsoft.com/cli/azure/) on your local machine, first create a resource group to use for this project.
 Replace the values `startupstack-demo` and `westus2` with a resource group name and location of your choosing.
 
 ```azurecli
