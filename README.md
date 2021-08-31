@@ -48,7 +48,7 @@ az role assignment create --assignee-object-id $SP_ID \
 ### Deploy the initial infrastructure
 
 ```azurecli
-cd sample_app_6th_ed
+cd startup-stack-rails
 az deployment group create --resource-group startupstack-demo \
     --template-file infrastructure/startup-stack.bicep \
     --parameters @infrastructure/params-production.json dbPassword="<DATABASE PASSWORD>"
