@@ -54,7 +54,7 @@ az role assignment create --assignee-object-id $SP_ID \
 cd startup-stack-rails
 az deployment group create --resource-group startupstack-demo \
     --template-file infrastructure/startup-stack.bicep \
-    --parameters @infrastructure/params-production.json dbPassword="<DATABASE PASSWORD>"
+    --parameters @infrastructure/params-production.json dbPassword="<DATABASE PASSWORD>" deploymentSpId=$SP_ID
 ```
 
 ### Configure the Secrets
