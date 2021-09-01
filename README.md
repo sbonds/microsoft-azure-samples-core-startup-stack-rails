@@ -52,6 +52,8 @@ az role assignment create --assignee-object-id $SP_ID \
 
 ### Deploy the initial infrastructure
 
+Run the below commands to deploy, and don't forget to replace `<DATABASE PASSWORD>` with something more secure.
+
 ```azurecli
 cd startup-stack-rails
 az deployment group create --resource-group startupstack-demo \
@@ -62,7 +64,7 @@ az deployment group create --resource-group startupstack-demo \
 ### Configure the Secrets
 
 1. Navigate to your repository on GitHub
-2. Select **Settings > Secrets > New Secret**
+2. Select **Settings > Secrets > New repository secret**
 3. Paste the entire JSON output that you saved earlier. Give the secret the name `AZURE_CREDENTIALS`.
 4. Create another secret named `AZURE_RG`. Add the name of the resource group you created (in the above example it is `startupstack-demo`) to the secret's value field.
 5. Create another secret named `DB_PASSWORD`. Add the database password you used when initially deploying the infrastructure to the secret's value field.
@@ -72,6 +74,8 @@ az deployment group create --resource-group startupstack-demo \
 1. Navigate to your repository on GitHub
 2. Select **Actions** and choose **Build and Deploy** from the list
 3. Click **Run Workflow**.
+
+NB There will be a warning about workflows not being enabled on forked repository - you will need to enable workflows.
 
 This will take about 10 minutes to complete on the first run. Subsequent runs will be faster due to caching of the Docker build.
 
