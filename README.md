@@ -6,9 +6,12 @@ This repository demonstrates the Startup Stack – a set of infrastructure desi
 ### Fork this repository
 Fork this repository into your own account (GitHub has [more information about forking repos](https://docs.github.com/en/get-started/quickstart/fork-a-repo))
 
+### Clone the repository
+Now clone this to your local machine or your Azure Cloud Shell. Here is [how to do this](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github/cloning-a-repository) from GitHub, or if you're using Visual Studio Code here are [instructions](https://code.visualstudio.com/docs/editor/github).
+
 ### Create a resource group and service principal
 
-Either using Azure Cloud Shell or the Azure CLI on your local machine, first create a resource group to use for this project.
+Either using [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/overview) or the [Azure CLI](https://docs.microsoft.com/cli/azure/) on your local machine, first create a resource group to use for this project.
 Replace the values `startupstack-demo` and `westus2` with a resource group name and location of your choosing.
 
 ```azurecli
