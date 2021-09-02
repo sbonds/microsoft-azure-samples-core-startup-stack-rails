@@ -102,9 +102,8 @@ jobs:
       env:
         AZCOPY_SPA_CLIENT_SECRET: ${{fromJSON(secrets.AZURE_CREDENTIALS).clientSecret}}
       run: |
-        azcopy login --service-principal --application-id ${{ fromJSON(secrets.AZURE_CREDENTIALS).clientId}}
+        azcopy login --service-principal --application-id ${{ needs.config.outputs.spId }}
         ASSETS_URL="$(az storage account list -g ${{ secrets.AZURE_RG }} --query [0].primaryEndpoints.blob -o tsv)assets"
-        echo $ASSETS_URL
         azcopy copy --recursive "static/*" $ASSETS_URL
         azcopy logout
 
