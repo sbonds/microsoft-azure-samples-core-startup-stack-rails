@@ -262,15 +262,6 @@ resource db 'Microsoft.DBForPostgreSql/flexibleServers@2020-02-14-preview' = {
   ]
 }
 
-resource default_db 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2020-11-05-preview' = {
-  parent: db
-  name: 'postgres'
-  properties: {
-    charset: 'UTF8'
-    collation: 'en_US.utf8'
-  }
-}
-
 resource app_db 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2020-11-05-preview' = {
   parent: db
   name: dbName
