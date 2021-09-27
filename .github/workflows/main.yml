@@ -65,6 +65,10 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
       
+    - name: 'Mask Service Principal Key'
+      run: |
+        echo "::add-mask::${{ fromJSON(secrets.AZURE_CREDENTIALS).clientSecret }}"
+      
     - uses: azure/docker-login@v1
       name: 'Login to Azure Container Registry'
       with:
