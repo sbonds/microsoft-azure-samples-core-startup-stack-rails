@@ -51,6 +51,10 @@ jobs:
         SP_ID=$(az ad sp show --id ${{ fromJSON(secrets.AZURE_CREDENTIALS).clientId }} --query objectId -o tsv)
         echo "::set-output name=spId::${SP_ID}"
 
+    - name: 'Mask Service Principal Key'
+      run: |
+        echo "::add-mask::${{ fromJSON(secrets.AZURE_CREDENTIALS).clientSecret }}"
+
 
   build:
     # The type of runner that the job will run on
