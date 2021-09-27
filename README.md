@@ -9,6 +9,7 @@ This repository demonstrates the Startup Stack – a set of infrastructure desi
 Fork this repository into your own account (GitHub has [more information about forking repos](https://docs.github.com/en/get-started/quickstart/fork-a-repo))
 
 ### Clone the repository
+
 Now clone this to your local machine or your Azure Cloud Shell. Here is [how to do this](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github/cloning-a-repository) from GitHub, or if you're using Visual Studio Code here are [instructions](https://code.visualstudio.com/docs/editor/github).
 
 ### Create a resource group and service principal
@@ -129,3 +130,9 @@ az group delete -g <RESOURCE GROUP NAME>
 This sample app is built around the reference app from Michael Hart's [Rails Tutorial](https://railstutorial.org). We chose it as it has real functionality but is simple enough not to be a distraction. You can read the [original readme](./README-ORIG.md) for more details about the app.
 
 The core idea of the Startup Stack is that whatever stack you choose, so long as you can build it with a Dockerfile, then it can be deployed successfully in a robust, production-ready way with the Startup Stack.
+
+## Legal
+
+### Trademarks
+
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow Microsoft’s Trademark & Brand Guidelines. Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos are subject to those third-party’s policies.
