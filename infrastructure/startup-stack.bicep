@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+
 param domain string = ''
 param deployedTag string = 'latest'
 param name string = 'startupstack'

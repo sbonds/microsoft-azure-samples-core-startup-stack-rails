@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
+
 FROM ruby:2.6.6-alpine AS build-env
 
 ARG RAILS_ROOT=/app
