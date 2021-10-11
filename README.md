@@ -1,8 +1,8 @@
-# Startup Stack Sample App
+# Core Startup Stack Sample App – Rails
 
-This repository demonstrates the Startup Stack – a set of infrastructure designed to get your app deployed in a robust, production-ready way with a minimum of fuss.
+This repository demonstrates the Core Startup Stack – a set of infrastructure designed to get your app deployed in a robust, production-ready way with a minimum of fuss.
 
-## Deploying the Startup Stack Sample App
+## Deploying the Core Startup Stack Sample App
 
 ### Fork this repository
 
