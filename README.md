@@ -2,7 +2,9 @@
 
 This repository demonstrates the Core Startup Stack – a set of infrastructure designed to get your app deployed in a robust, production-ready way with a minimum of fuss.
 
-## Deploying the Core Startup Stack Sample App
+![Architecture diagram showing the core startup stack deployed by this project](infrastructure/startup-stack-architecture.png)
+
+## Deploying the Startup Stack Sample App
 
 ### Fork this repository
 
